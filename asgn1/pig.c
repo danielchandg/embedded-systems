@@ -27,14 +27,14 @@ int main(void) {
     for (int i = 0; i < players; i += 1)
         pts[i] = 0;
     while (1) {
-        printf("%s rolls the pig... ", names[turn]);
+        printf("%s rolls the pig...", names[turn]);
         int roll = random() % 7;
         pts[turn] += values[pig[roll]];
-        printf("pig lands %s ", m[pig[roll]]);
+        printf(" pig lands %s", m[pig[roll]]);
         while (pig[roll] != SIDE && pts[turn] < 100) {
             roll = random() % 7;
             pts[turn] += values[pig[roll]];
-            printf("pig lands %s ", m[pig[roll]]);
+            printf(" pig lands %s", m[pig[roll]]);
         }
         if (pts[turn] >= 100) {
             printf("\n%s wins with %d points!\n", names[turn], pts[turn]);
