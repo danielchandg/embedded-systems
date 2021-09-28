@@ -8,7 +8,7 @@ typedef enum { SIDE, RAZORBACK, TROTTER, SNOUTER, JOWLER } Position;
 const Position pig[7] = { SIDE, SIDE, RAZORBACK, TROTTER, SNOUTER, JOWLER, JOWLER };
 
 int main(void) {
-    int players = -1, seed = -1, turn = 0, values[5] = { 0, 10, 10, 15, 5 }, pts[10];
+    int players = -1, seed = -1, turn = 0, values[5] = { 0, 10, 10, 15, 5 }, pts[10], roll;
     const char *m[5];
     m[0] = "on side", m[1] = "on back", m[2] = "upright", m[3] = "on snout", m[4] = "on ear";
     printf("How many players? ");
@@ -28,9 +28,7 @@ int main(void) {
         pts[i] = 0;
     while (1) {
         printf("%s rolls the pig...", names[turn]);
-        int roll = random() % 7;
-        pts[turn] += values[pig[roll]];
-        printf(" pig lands %s", m[pig[roll]]);
+        roll = 2;
         while (pig[roll] != SIDE && pts[turn] < 100) {
             roll = random() % 7;
             pts[turn] += values[pig[roll]];
