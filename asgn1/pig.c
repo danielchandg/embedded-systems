@@ -40,7 +40,7 @@ int main(void) {
             break;
         }
         turn = (turn + 1) % players;
-	printf("\n");
+        printf("\n");
     }
     return 0;
 }
