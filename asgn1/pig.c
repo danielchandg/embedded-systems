@@ -1,5 +1,6 @@
 #include "names.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,7 +19,7 @@ int main(void) {
     }
     printf("Random seed: ");
     scanf("%d", &seed);
-    if (seed < 0) {
+    if (seed < 0 || (unsigned int) seed > (UINT_MAX)) {
         fprintf(stderr, "Invalid random seed. Using 2021 instead.\n");
         seed = 2021;
     }
