@@ -1,19 +1,18 @@
 #pragma once
 #include "mathlib.h"
 #include "newton.c"
-static int terms = 0;
+static int terms2 = 0;
 double pi_madhava(void){
-	double sum = 0, numerator = 1;
-	while(1){
-		double term = (numerator / (2*terms+1));
-		if(term <= EPSILON) break;
+	double sum = 0, numerator = 1, term=1;
+	while(absolute(term) > EPSILON){
+		term = (numerator / (2*terms2+1));
 		sum += term;
-		terms+=1;
+		terms2+=1;
 		numerator /= (-3);
 	}
 	return sqrt_newton(12) * sum;
 }
 int pi_madhava_terms(void){
-	return terms;
+	return terms2;
 }
 

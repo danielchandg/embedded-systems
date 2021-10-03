@@ -1,18 +1,18 @@
 #pragma once
 #include "mathlib.h"
 #include "newton.c"
-static int terms = 1;
+static int terms3 = 1;
 double pi_euler(void){
-	double sum = 0;
-	while(1){
-		double term = 1/(terms*terms);
-		if(term <= EPSILON) break;
+	double sum = 0, term=1;
+	while(term > EPSILON){
+		double t = (double)terms3;
+		term = 1/t/t;
 		sum += term;
-		terms+=1;
+		terms3+=1;
 	}
-	terms -= 1;
-	return newton_sqrt(6*sum);
+	terms3 -= 1;
+	return sqrt_newton(6*sum);
 }
 int pi_euler_terms(void){
-	return terms;
+	return terms3;
 }
