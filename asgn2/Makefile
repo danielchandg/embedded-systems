@@ -3,10 +3,10 @@ CFLAGS = -Wall -Wpedantic -Werror -Wextra
 
 all: mathlib-test
 
-mathlib-test: mathlib-test.o bbp.o e.o euler.o madhava.o mathlib.h newton.o viete.o
+mathlib-test: mathlib-test.o bbp.o e.o euler.o madhava.o mathlib.h viete.o
 	$(CC) -o mathlib-test mathlib-test.o -lm
 
-mathlib-test.o: mathlib-test.c
+mathlib-test.o: mathlib-test.c newton.c
 	$(CC) $(CFLAGS) -c mathlib-test.c
 
 bbp.o: bbp.c

@@ -3,9 +3,7 @@
 #include "euler.c"
 #include "bbp.c"
 #include "viete.c"
-#ifndef _NEWTON_
 #include "newton.c"
-#endif
 #include "mathlib.h"
 #include <stdio.h>
 #include <unistd.h>

@@ -1,7 +1,5 @@
 #include "mathlib.h"
-#ifndef _NEWTON_
 #include "newton.c"
-#endif
 static int terms2 = 0;
 double pi_madhava(void){
 	double sum = 0, numerator = 1, term=1;
