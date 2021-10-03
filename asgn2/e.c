@@ -1,4 +1,3 @@
-#pragma once
 #include "mathlib.h"
 static int terms1 = 1;
 double e(void){

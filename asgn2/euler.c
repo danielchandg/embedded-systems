@@ -1,6 +1,7 @@
-#pragma once
 #include "mathlib.h"
+#ifndef _NEWTON_
 #include "newton.c"
+#endif
 static int terms3 = 1;
 double pi_euler(void){
 	double sum = 0, term=1;

@@ -1,4 +1,4 @@
-#pragma once
+#define _NEWTON_ This_is_newton.c
 #include "mathlib.h"
 static int iters = 0;
 double sqrt_newton(double x){

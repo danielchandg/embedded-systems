@@ -1,4 +1,3 @@
-#pragma once
 #include "mathlib.h"
 static int terms4=0;
 double pi_bbp(void){

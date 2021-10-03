@@ -1,6 +1,7 @@
-#pragma once
 #include "mathlib.h"
+#ifndef _NEWTON_
 #include "newton.c"
+#endif
 static int factors = 0;
 double pi_viete(void){
 	double product = 1, factor = 0;
