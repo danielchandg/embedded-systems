@@ -1,5 +1,4 @@
 #include "mathlib.h"
-#include "newton.c"
 static int terms3 = 1;
 double pi_euler(void){
 	double sum = 0, term=1;

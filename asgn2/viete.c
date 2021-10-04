@@ -1,5 +1,4 @@
 #include "mathlib.h"
-#include "newton.c"
 static int factors = 0;
 double pi_viete(void){
 	double product = 1, factor = 0;

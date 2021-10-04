@@ -3,9 +3,9 @@ CFLAGS = -Wall -Wpedantic -Werror -Wextra
 
 objects = mathlib-test.o bbp.o e.o euler.o madhava.o viete.o newton.o
 
-all: mathlib-test $(objects)
+all: mathlib-test
 
-mathlib-test: mathlib-test.o  mathlib.h
+mathlib-test: $(objects)  mathlib.h
 	$(CC) -o mathlib-test mathlib-test.o -lm
 
 mathlib-test.o: mathlib-test.c
