@@ -1,4 +1,3 @@
-
 # Assignment 2 - A Little Slice of Pi
 
   
@@ -27,9 +26,9 @@ This program calculates mathematical constants based on different converging ser
 	- `-s` Prints the number of terms calculated in each test.
 	- `-h` Prints the help message. 
 
-4.  Run `make clean` to remove object files and executables after building
+4.  Run `make clean` to remove object files and executables after building  
 # Makefile
-**Compiler**: `clang` 
-**Flags**: `-Wall -Wpedantic -Werror -Wextra`
-**Clean**: `make clean` removes executables and object files
-**Format**: `make format` formats all `.c` and `.h` files
+**Compiler**: `clang`  
+**Flags**: `-Wall -Wpedantic -Werror -Wextra`  
+**Clean**: `make clean` removes executables and object files  
+**Format**: `make format` formats all `.c` and `.h` files  
