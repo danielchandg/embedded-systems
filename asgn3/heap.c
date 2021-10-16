@@ -44,7 +44,7 @@ void heap_sort(Stats *stats, uint32_t *A, uint32_t n){
 	int32_t first = 1;
 	build_heap(stats, A, first, n);
 	for(int32_t i = n; i>first; i--){
-		swap(stats, A[first-1], A[i-1]);
+		swap(stats, &A[first-1], &A[i-1]);
 		fix_heap(stats, A, first, i-1);
 	}
 }
