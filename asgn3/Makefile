@@ -13,7 +13,7 @@ sorting: $(objects)
 	$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f sorting *.o *.h.gch
+	rm -f sorting *.o *.gch
 
 format:
 	clang-format -i -style=file *.c *.h
