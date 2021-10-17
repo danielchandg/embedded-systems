@@ -1,6 +1,11 @@
 #include "quick.h"
 
 #include "stats.h"
+/*
+ * Runs the partition algorithm on A from indexes lo to hi.
+ * Picks A[hi] as a pivot. All elements less than A[hi] go to
+ * the left, greater than A[hi} go to the right.
+ */
 uint32_t partition(Stats *stats, uint32_t *A, uint32_t lo, uint32_t hi) {
     uint32_t i = lo - 1;
     for (uint32_t j = lo; j < hi; j++) {
@@ -12,6 +17,10 @@ uint32_t partition(Stats *stats, uint32_t *A, uint32_t lo, uint32_t hi) {
     swap(stats, &A[i], &A[hi - 1]);
     return i + 1;
 }
+/*
+ * Runs the partition algorithm, then recursively runs with the left
+ * and right parts of the array.
+ */
 void quick_sorter(Stats *stats, uint32_t *A, uint32_t lo, uint32_t hi) {
     if (lo < hi) {
         uint32_t p = partition(stats, A, lo, hi);

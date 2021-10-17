@@ -15,6 +15,7 @@
 
 #define OPTIONS "aeisqr:n:p:h"
 
+// Prints out the help string given the current directory.
 void help_string(char *cwd) {
     printf(
         "SYNOPSIS\n   A collection of comparison-based sorting algorithms.\n\nUSAGE\n   %s/sorting "
@@ -26,6 +27,8 @@ void help_string(char *cwd) {
         "(default: 100).\n   -r seed         specify random seed (default: 13371453).\n",
         cwd);
 }
+
+// Prints out <elements> amount of numbers from A with 5 numbers per row.
 void print_arr(uint32_t *A, uint32_t elements) {
     for (uint32_t i = 0; i < elements; i++) {
         if (i % 5 == 0)
@@ -33,6 +36,10 @@ void print_arr(uint32_t *A, uint32_t elements) {
         printf("%13" PRIu32, A[i]);
     }
     printf("\n");
+}
+
+int compare(const void *a, const void *b) {
+    return (*(int *) b - *(int *) a);
 }
 
 int main(int argc, char **argv) {
@@ -75,10 +82,7 @@ int main(int argc, char **argv) {
             }
             break;
         case 'h': help_string(cwd); return 0;
-        case '?':
-            // fprintf(stderr, "%s/sorting: option requires an argument -- '%c'\n", cwd, optopt);
-            help_string(cwd);
-            return 0;
+        case '?': help_string(cwd); return 0;
         }
     }
     // check if no sort options are selected
@@ -89,18 +93,27 @@ int main(int argc, char **argv) {
     }
     free(cwd);
 
+    // If print is more than the size of the array, set print to array size
     if (print > elements) {
         print = elements;
     }
 
+    // arr is the unsorted array
+    // A is the sorted array
     uint32_t *arr = (uint32_t *) calloc(elements, sizeof(uint32_t));
     uint32_t *A = (uint32_t *) calloc(elements, sizeof(uint32_t));
     srandom(seed);
 
     for (uint32_t i = 0; i < elements; i++) {
+        // 1073741824 is 2^30
         arr[i] = random() % 1073741824;
         A[i] = arr[i];
     }
+
+    //qsort(arr, elements, sizeof(uint32_t), compare);
+    for (uint32_t i = 0; i < elements; i++)
+        A[i] = arr[i];
+
     if (member_set(0, opts)) {
         reset(&heap_stats);
         heap_sort(&heap_stats, A, elements);
