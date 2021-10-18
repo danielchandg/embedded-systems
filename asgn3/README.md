@@ -26,9 +26,9 @@ This program sorts an array using 4 sorting algorithms: Quick Sort, Heap Sort, S
 	- `-r <seed>` Initializes random seed (default: 13371453).
 	- `-h` Prints the help message. 
 
-4.  Run `make clean` to remove object files and executables after building
+4.  Run `make clean` to remove object files and executables after building  
 # Makefile
-**Compiler**: `clang` 
-**Flags**: `-Wall -Wpedantic -Werror -Wextra`
-**Clean**: `make clean` removes executables and object files
-**Format**: `make format` formats all `.c` and `.h` files
+**Compiler**: `clang`  
+**Flags**: `-Wall -Wpedantic -Werror -Wextra`  
+**Clean**: `make clean` removes executables and object files  
+**Format**: `make format` formats all `.c` and `.h` files  
