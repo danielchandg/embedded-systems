@@ -101,14 +101,7 @@ int main(int argc, char **argv) {
             }
         }
         cities[i] = strdup(buf);
-        /*if (fscanf(infile, "%s\n", cities[i]) != 1) {
-            fprintf(stderr, "Error: malformed city.\n");
-            return 0;
-        }*/
-        //fprintf(stdout, "City %d: %s\n", i, cities[i]);
     }
-    free(buf);
-    buf = NULL;
     Graph *g = graph_create(n, undirected);
     uint32_t city1 = 0, city2 = 0, weight = 0;
     int reading = fscanf(infile, "%" SCNu32 " %" SCNu32 " %" SCNu32 "\n", &city1, &city2, &weight);
@@ -117,7 +110,6 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Error: malformed edge.\n");
             return 0;
         }
-        //fprintf(stdout, "Edge from %d to %d with weight %d\n", city1, city2, weight);
         if (undirected)
             graph_add_edge(g, city2, city1, weight);
         reading = fscanf(infile, "%" SCNu32 " %" SCNu32 " %" SCNu32 "\n", &city1, &city2, &weight);
@@ -129,11 +121,25 @@ int main(int argc, char **argv) {
     path_push_vertex(cur, 0, g);
     graph_mark_unvisited(g, 0);
     path_copy(shortest, cur);
-    //fprintf(stdout, "Starting DFS\n");
     dfs(g, 0, cur, shortest, cities, outfile);
-    //fprintf(stdout, "DFS complete.\n");
-    path_delete(&cur);
     path_print(shortest, outfile, cities);
     fprintf(outfile, "Total recursive calls: %d\n", dfs_calls);
+
+    // Time to free memory.
+
+    path_delete(&cur);
     path_delete(&shortest);
+    graph_delete(&g);
+    fclose(infile);
+    fclose(outfile);
+    for (uint32_t i = 0; i < n; i++) {
+        free(cities[i]);
+        cities[i] = NULL;
+    }
+    free(cities);
+    cities = NULL;
+    free(buf);
+    buf = NULL;
+    free(cwd);
+    cwd = NULL;
 }
