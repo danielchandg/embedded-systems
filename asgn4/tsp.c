@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #define OPTIONS "hvui:o:"
@@ -88,15 +89,26 @@ int main(int argc, char **argv) {
         return 0;
     }
     //fprintf(stdout, "Number of vertices: %d\n", n);
+    char *buf = (char *) calloc(1024, sizeof(char));
     char **cities = (char **) calloc(n, sizeof(char *));
     for (uint32_t i = 0; i < n; i++) {
-        cities[i] = (char *) calloc(1024, sizeof(char));
-        if (fscanf(infile, "%s\n", cities[i]) != 1) {
+        //cities[i] = (char *) calloc(1024, sizeof(char));
+        fgets(buf, 1024, infile);
+        for (uint32_t j = 0; j < 1024; j++) {
+            if (buf[j] == '\n') {
+                buf[j] = '\0';
+                break;
+            }
+        }
+        cities[i] = strdup(buf);
+        /*if (fscanf(infile, "%s\n", cities[i]) != 1) {
             fprintf(stderr, "Error: malformed city.\n");
             return 0;
-        }
+        }*/
         //fprintf(stdout, "City %d: %s\n", i, cities[i]);
     }
+    free(buf);
+    buf = NULL;
     Graph *g = graph_create(n, undirected);
     uint32_t city1 = 0, city2 = 0, weight = 0;
     int reading = fscanf(infile, "%" SCNu32 " %" SCNu32 " %" SCNu32 "\n", &city1, &city2, &weight);
