@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Credit to Darrell Long for these functions.
+
 typedef struct Path {
     Stack *vertices;
     uint32_t length;
@@ -58,8 +60,6 @@ uint32_t path_length(Path *p) {
     return p->length;
 }
 void path_copy(Path *dst, Path *src) {
-    //path_delete(&dst);
-    //dst = path_create();
     stack_copy(dst->vertices, src->vertices);
     dst->length = src->length;
 }

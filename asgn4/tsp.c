@@ -3,7 +3,6 @@
 #include "stack.h"
 #include "vertices.h"
 
-#include <errno.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -16,13 +15,16 @@
 bool verbose = false, undirected = false;
 uint32_t n, j;
 static uint32_t dfs_calls = 0;
-void path_peek(Path *p, uint32_t *top);
+
+// DFS Function for finding Hamiltonian paths.
+
 void dfs(Graph *G, uint32_t v, Path *cur, Path *shortest, char *cities[], FILE *outfile) {
     dfs_calls++;
-    if (path_length(cur) >= path_length(shortest) && path_length(shortest)) {
+    // Return if current path length exceeds shortest path.
+    if (path_length(cur) >= path_length(shortest) && path_length(shortest))
         return;
-    }
-    //fprintf(stdout, "Current path vertices & length: %d, %d\n", path_vertices(cur), path_length(cur));
+
+    // First check if current path visited every city.
     if (path_vertices(cur) == n) {
         if (graph_has_edge(G, v, 0)) {
             path_push_vertex(cur, 0, G);
@@ -33,18 +35,16 @@ void dfs(Graph *G, uint32_t v, Path *cur, Path *shortest, char *cities[], FILE *
         }
         return;
     }
+
+    // Check which cities current path can go to.
     for (uint32_t i = 0; i < n; i++) {
         if (i == START_VERTEX)
             continue;
-        //fprintf(stdout, "Path (%d, %d): %d\n", path_vertices(cur), path_length(cur), i);
         if (graph_has_edge(G, v, i) && !graph_visited(G, i)) {
-            //if(path_length(cur) >= path_length(shortest) && path_vertices(shortest) > 1){
-            //path_print(shortest, outfile, cities);
-            //	path_pop_vertex(cur, &j, G);
-            //	continue;
-            //}
             graph_mark_visited(G, i);
             path_push_vertex(cur, i, G);
+
+            // Create a temp path for the next DFS call.
             Path *temp = path_create();
             path_copy(temp, cur);
             dfs(G, i, temp, shortest, cities, outfile);
@@ -53,8 +53,6 @@ void dfs(Graph *G, uint32_t v, Path *cur, Path *shortest, char *cities[], FILE *
             graph_mark_unvisited(G, i);
         }
     }
-    //path_delete(&temp);
-    //path_delete(&cur);
 }
 
 // Prints out the help string given the current directory.
@@ -74,6 +72,7 @@ int main(int argc, char **argv) {
     char *cwd = (char *) calloc(FILENAME_MAX, sizeof(char));
     getcwd(cwd, FILENAME_MAX);
 
+    // Reading command=line options.
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
         case 'h': help_string(cwd, outfile); return 0;
@@ -84,15 +83,15 @@ int main(int argc, char **argv) {
         case '?': help_string(cwd, outfile); return 0;
         }
     }
+
+    // Reading inputs.
     if (fscanf(infile, "%" SCNu32 "\n", &n) != 1 || n > VERTICES) {
         fprintf(stderr, "Error: malformed number of vertices.\n");
         return 0;
     }
-    //fprintf(stdout, "Number of vertices: %d\n", n);
     char *buf = (char *) calloc(1024, sizeof(char));
     char **cities = (char **) calloc(n, sizeof(char *));
     for (uint32_t i = 0; i < n; i++) {
-        //cities[i] = (char *) calloc(1024, sizeof(char));
         fgets(buf, 1024, infile);
         for (uint32_t j = 0; j < 1024; j++) {
             if (buf[j] == '\n') {
@@ -117,6 +116,8 @@ int main(int argc, char **argv) {
     if (reading != EOF) {
         fprintf(stderr, "Error: malformed edge.\n");
     }
+
+    // Starting DFS.
     Path *cur = path_create(), *shortest = path_create();
     path_push_vertex(cur, 0, g);
     graph_mark_unvisited(g, 0);

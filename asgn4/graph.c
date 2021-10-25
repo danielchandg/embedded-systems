@@ -67,17 +67,8 @@ void graph_mark_unvisited(Graph *G, uint32_t v) {
 }
 void graph_print(Graph *G) {
     printf("----- This Graph -----\n");
-    printf("vertices: %d\n", G->vertices);
     printf("visited:\n");
     for (uint32_t i = 0; i < G->vertices; i++)
         printf("%d, ", G->visited[i]);
-    /*printf("\n\n");
-	printf("Adjacency matrix:\n");
-	for(uint32_t i=0; i<G->vertices; i++){
-		for(uint32_t j=0; j<G->vertices; j++){
-			printf("%d ", G->matrix[i][j]);
-		}
-		printf("\n");
-	}*/
     printf("\n----------------------\n");
 }

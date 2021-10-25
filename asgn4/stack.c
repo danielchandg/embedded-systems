@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Credit to Darrell Long for this ADT.
+// Credit to Darrell Long for these functions.
 
 typedef struct Stack {
     uint32_t top;
