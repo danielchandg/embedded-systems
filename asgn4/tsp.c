@@ -56,10 +56,10 @@ void dfs(Graph *G, uint32_t v, Path *cur, Path *shortest, char *cities[], FILE *
 }
 
 // Prints out the help string given the current directory.
-void help_string(char *cwd, FILE *outfile) {
-    fprintf(outfile,
+void help_string(char *cwd) {
+    fprintf(stdout,
         "SYNOPSIS\n  Traveling Salesman Problem using DFS.\n\nUSAGE\n  %s/tsp [-u] [-v] [-h] [-i "
-        "infile] [-o outfile]\n\nOPTIONS  -u             Use undirected graph.\n  -v             "
+        "infile] [-o outfile]\n\nOPTIONS\n  -u             Use undirected graph.\n  -v             "
         "Enable verbose printing.\n  -h             Program usage and help.\n  -i infile      "
         "Input containing graph (default: stdin)\n  -o outfile     Output of computed path "
         "(default: stdout)\n",
@@ -75,12 +75,18 @@ int main(int argc, char **argv) {
     // Reading command=line options.
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
-        case 'h': help_string(cwd, outfile); return 0;
+        case 'h': help_string(cwd); return 0;
         case 'v': verbose = true; break;
         case 'u': undirected = true; break;
-        case 'i': infile = fopen(optarg, "r"); break;
+        case 'i':
+            infile = fopen(optarg, "r");
+            if (infile == NULL) {
+                fprintf(stderr, "Error: failed to open infile.\n");
+                return 0;
+            }
+            break;
         case 'o': outfile = fopen(optarg, "w"); break;
-        case '?': help_string(cwd, outfile); return 0;
+        case '?': help_string(cwd); return 0;
         }
     }
 
@@ -92,7 +98,10 @@ int main(int argc, char **argv) {
     char *buf = (char *) calloc(1024, sizeof(char));
     char **cities = (char **) calloc(n, sizeof(char *));
     for (uint32_t i = 0; i < n; i++) {
-        fgets(buf, 1024, infile);
+        if (fgets(buf, 1024, infile) == NULL) {
+            fprintf(stderr, "Error: malformed city name.\n");
+            return 0;
+        }
         for (uint32_t j = 0; j < 1024; j++) {
             if (buf[j] == '\n') {
                 buf[j] = '\0';
@@ -105,16 +114,14 @@ int main(int argc, char **argv) {
     uint32_t city1 = 0, city2 = 0, weight = 0;
     int reading = fscanf(infile, "%" SCNu32 " %" SCNu32 " %" SCNu32 "\n", &city1, &city2, &weight);
     while (reading == 3) {
-        if (!graph_add_edge(g, city1, city2, weight)) {
-            fprintf(stderr, "Error: malformed edge.\n");
-            return 0;
-        }
+        graph_add_edge(g, city1, city2, weight);
         if (undirected)
             graph_add_edge(g, city2, city1, weight);
         reading = fscanf(infile, "%" SCNu32 " %" SCNu32 " %" SCNu32 "\n", &city1, &city2, &weight);
     }
     if (reading != EOF) {
         fprintf(stderr, "Error: malformed edge.\n");
+        return 0;
     }
 
     // Starting DFS.
@@ -123,7 +130,10 @@ int main(int argc, char **argv) {
     graph_mark_unvisited(g, 0);
     path_copy(shortest, cur);
     dfs(g, 0, cur, shortest, cities, outfile);
-    path_print(shortest, outfile, cities);
+    if (path_length(shortest))
+        path_print(shortest, outfile, cities);
+    else
+        fprintf(outfile, "No Hamiltonian path found.\n");
     fprintf(outfile, "Total recursive calls: %d\n", dfs_calls);
 
     // Time to free memory.

@@ -48,21 +48,21 @@ bool graph_has_edge(Graph *G, uint32_t i, uint32_t j) {
     return graph_edge_weight(G, i, j) > 0;
 }
 uint32_t graph_edge_weight(Graph *G, uint32_t i, uint32_t j) {
-    if (i < 0 || j < 0 || i >= VERTICES || j >= VERTICES)
+    if (i < 0 || j < 0 || i >= graph_vertices(G) || j >= graph_vertices(G))
         return 0;
     return G->matrix[i][j];
 }
 bool graph_visited(Graph *G, uint32_t v) {
-    if (v < 0 || v >= VERTICES)
+    if (v < 0 || v >= graph_vertices(G))
         return false;
     return G->visited[v];
 }
 void graph_mark_visited(Graph *G, uint32_t v) {
-    if (v >= 0 && v < VERTICES)
+    if (v >= 0 && v < graph_vertices(G))
         G->visited[v] = true;
 }
 void graph_mark_unvisited(Graph *G, uint32_t v) {
-    if (v >= 0 && v < VERTICES)
+    if (v >= 0 && v < graph_vertices(G))
         G->visited[v] = false;
 }
 void graph_print(Graph *G) {
