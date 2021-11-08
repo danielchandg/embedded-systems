@@ -28,6 +28,7 @@ int read_bytes(int infile, uint8_t *buf, int nbytes) {
         count = read(infile, buf + cur_read, nbytes - cur_read);
         // if (count < nbytes - cur_read) printf("Read_bytes wanted %d bytes and read %d bytes\n", nbytes, count);
     }
+    //printf("Read bytes wanted to print %d bytes, actually printed %d bytes.\n", nbytes, cur_read);
     bytes_read += (uint64_t) cur_read;
     return cur_read;
 }
@@ -35,7 +36,7 @@ int write_bytes(int outfile, uint8_t *buf, int nbytes) {
     int count;
     int cur_written = 0;
     while ((count = write(outfile, buf + cur_written, nbytes - cur_written)) > 0) {
-        cur_written += (uint64_t) count;
+        cur_written += count;
         if (cur_written >= nbytes)
             break;
     }
@@ -46,10 +47,10 @@ bool read_bit(int infile, uint8_t *bit) {
 
     if (buffer_index == 0 || buffer_index >= 8 * BLOCK) {
         buffer_index = 0;
-        int count = read_bytes(infile, buffer, BLOCK);
-        if (count < BLOCK) {
+        read_bytes(infile, buffer, BLOCK);
+        /*if (read_bytes(infile, buffer, BLOCK) < BLOCK) {
             printf("Warning: read_bit only read %d bytes out of %d\n", count, BLOCK);
-        }
+        }*/
     }
     int index = buffer_index / 8, shift = buffer_index % 8;
     *bit = (buffer[index] >> shift) & 1;

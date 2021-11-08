@@ -29,7 +29,6 @@ void help_string(char *cwd) {
         "Input file to decompress.\n  -o outfile     Output of decompressed data.\n",
         cwd);
 }
-
 void print_tree(Node *root) {
     if (!root->left || !root->right)
         return;
@@ -114,6 +113,16 @@ int main(int argc, char **argv) {
             node = tree;
         }
     }
+	if(verbose){
+		double space_saving = ((double)bytes_read) / ((double)bytes_written);
+        	fprintf(stdout, "Compressed file size: %" PRIu64 " bytes\nDecompressed file size: %" PRIu64 " bytes\nSpace saving: %4.2lf%%\n", bytes_read, bytes_written, 100*(1-space_saving));
+	}	
+	// node_delete(&node);
+	delete_tree(&tree);
+	tree = NULL;
+	node = NULL;
+	free(buf);
+	buf = NULL;
 
     return 0;
 }

@@ -130,10 +130,16 @@ int main(int argc, char **argv) {
         write_code(outfile, &table[*bit]);
     }
     flush_codes(outfile);
-
+    if(verbose){
+	double space_saving = ((double)bytes_written) / ((double)bytes_read/2);
+	fprintf(stdout, "Uncompressed file size: %" PRIu64 " bytes\nCompressed file size: %" PRIu64 " bytes\nSpace saving: %4.2lf%%\n", bytes_read/2, bytes_written, 100*(1-space_saving));
+    }
     close(infile);
     close(outfile);
     close(encode_file);
 
+	free(bit);
+	bit = NULL;
+	delete_tree(&tree);
     return 0;
 }
