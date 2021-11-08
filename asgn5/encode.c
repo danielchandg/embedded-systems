@@ -21,6 +21,7 @@
 
 bool verbose = false;
 
+// Helper function to print help message.
 void help_string(char *cwd) {
     fprintf(stdout,
         "SYNOPSIS\n  A Huffman encoder.\n  Compresses a file using the Huffman coding "
@@ -43,24 +44,23 @@ int main(int argc, char **argv) {
         case 'i':
             infile = open(optarg, O_RDONLY);
             if (infile == -1) {
-                //fprintf(stderr, "Error: failed to open infile.\n");
                 return 0;
             }
             infile_name = optarg;
             break;
         case 'o':
             outfile = open(optarg, O_WRONLY);
+            // Create the outfile if not found.
             if (outfile == -1) {
                 outfile = creat(optarg, S_IRWXU);
-                //fprintf(stderr, "Error: failed to open outfile.\n");
-                //return 0;
             }
             break;
         case 'v': verbose = true; break;
         case '?': help_string(cwd); return 0;
         }
     }
-    // uint64_t histogram[ALPHABET];
+
+    // Create a histogram of the symbols in the file.
     uint64_t *histogram = (uint64_t *) calloc(ALPHABET, sizeof(uint64_t));
     for (int i = 0; i < ALPHABET; i++)
         histogram[i] = 0;
@@ -76,38 +76,31 @@ int main(int argc, char **argv) {
         if (histogram[*bit] == 1)
             unique_symbols++;
     }
+
+    // Debug message to print the histogram.
     /*
 	for(int i=0; i<ALPHABET; i++){
 		if(histogram[i] > 0){
 			printf("%c: %lu\n", i, histogram[i]);
 		}
 	}
-	printf("\n\n");*/
-    Node *tree = build_tree(histogram);
-    //print_tree(tree);
+    printf("\n\n");*/
 
-    //Code table[ALPHABET];
+    // Build the Huffman tree.
+    Node *tree = build_tree(histogram);
+
+    // Build the code table with post-order traversal of the tree.
     Code *table = (Code *) calloc(ALPHABET, sizeof(Code));
     for (int i = 0; i < ALPHABET; i++)
         table[i] = code_init();
     build_codes(tree, table);
 
-    /*
-	for(int i=0; i<ALPHABET; i++){
-		if(!code_empty(&table[i])){
-			printf("%c's ", i);
-			code_print(&table[i]);	
-		}
-	}
-	printf("\nTree Dump:\n");
-	dump_tree(1, tree);
-	printf("\n\n");
-	*/
-
+    // Create the header.
     Header *h = (Header *) malloc(sizeof(Header));
     h->magic = MAGIC;
     h->tree_size = 3 * unique_symbols - 1;
 
+    // Create a stat struct to get file size and file permissions.
     struct stat statbuf;
     fstat(infile, &statbuf);
     // statbuf.st_mode is the permissions.
@@ -115,9 +108,8 @@ int main(int argc, char **argv) {
     h->permissions = statbuf.st_mode;
     h->file_size = statbuf.st_size;
 
+    // Print things to outfile.
     write_bytes(outfile, (uint8_t *) h, sizeof(Header));
-    //read_bytes(in, (uint8_t *) &h, sizeof(header));
-
     dump_tree(outfile, tree);
 
     int encode_file = open(infile_name, O_RDONLY);
@@ -125,6 +117,8 @@ int main(int argc, char **argv) {
         printf("Error reopening infile\n");
         return 1;
     }
+
+    // Write Codes to file.
     while (true) {
         int reading = read_bytes(encode_file, bit, 1);
         if (reading <= 0)
@@ -132,6 +126,8 @@ int main(int argc, char **argv) {
         write_code(outfile, &table[*bit]);
     }
     flush_codes(outfile);
+
+    // Print verbose statistics if requested.
     if (verbose) {
         double space_saving = ((double) bytes_written) / ((double) bytes_read / 2);
         fprintf(stdout,
@@ -139,6 +135,8 @@ int main(int argc, char **argv) {
             " bytes\nSpace saving: %4.2lf%%\n",
             bytes_read / 2, bytes_written, 100 * (1 - space_saving));
     }
+
+    // Close files and memory cleanup.
     close(infile);
     close(outfile);
     close(encode_file);
@@ -153,8 +151,6 @@ int main(int argc, char **argv) {
     bit = NULL;
     free(h);
     h = NULL;
-    /*free(statbuf);
-    statbuf = NULL;*/
     delete_tree(&tree);
     tree = NULL;
     return 0;

@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+// Code is a bit vector of size 256.
 Code code_init(void) {
     Code c;
     c.top = 0;
@@ -27,25 +28,21 @@ bool code_set_bit(Code *c, uint32_t i) {
     if (i > c->top)
         return false;
     c->bits[i / 8] |= (1 << i % 8);
-    //printf("c->bits[%" PRIu32 "] is now: %" PRIu8 "\n", i/8, c->bits[i/8]);
     return true;
 }
 bool code_clr_bit(Code *c, uint32_t i) {
     if (i > c->top)
         return false;
     uint8_t val = ~(1 << i % 8);
-    //printf("c->bits[%" PRIu32 "] before: %" PRIu8 "\n", i/8, c->bits[i/8]);
     c->bits[i / 8] &= val;
-    //printf("c->bits[%" PRIu32 "] after: %" PRIu8 "\n", i/8, c->bits[i/8]);
     return true;
 }
 bool code_get_bit(Code *c, uint32_t i) {
     if (i >= c->top)
         return false;
-    //printf("getting bit %" PRIu32 " of %" PRIu8 "\n", i%8, c->bits[i/8]);
     return c->bits[i / 8] & (1 << i % 8);
 }
-// Assume the value of bit is 0 or 1.
+// Assume the value of bit is 0 or 1; pushed onto code.
 bool code_push_bit(Code *c, uint8_t bit) {
     if (c->top == ALPHABET)
         return false;

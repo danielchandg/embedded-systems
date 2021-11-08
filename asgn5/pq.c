@@ -18,30 +18,27 @@ uint32_t min_child(Node **A, uint32_t first, uint32_t last) {
     uint32_t left = 2 * first, right = 2 * first + 1;
     return (right <= last && A[right - 1]->frequency < A[left - 1]->frequency) ? right : left;
 }
+// Fixes heap when dequeue-ing nodes.
 void fix_heap(Node **A, uint32_t first, uint32_t last) {
     uint32_t mother = first, great = min_child(A, first, last);
-    //printf("Fix heap with A[0] = ");
-    //node_print(*A);
-    //printf("\n");
     while (mother <= last / 2) {
         if (A[mother - 1]->frequency > A[great - 1]->frequency) {
             Node c = *A[mother - 1];
             *A[mother - 1] = *A[great - 1];
             *A[great - 1] = c;
-            // node_swap(A[mother-1], A[great-1]);
             mother = great;
             great = min_child(A, mother, last);
         } else
             break;
     }
 }
+// Fixes heap when enqueue-ing nodes.
 void fix_heap2(Node **A, uint32_t first, uint32_t child) {
     uint32_t mother = child >> 1;
     while (mother >= first && A[mother - 1]->frequency > A[child - 1]->frequency) {
         Node c = *A[mother - 1];
         *A[mother - 1] = *A[child - 1];
         *A[child - 1] = c;
-        // node_swap(A[mother-1], A[child-1]);
         mother = mother >> 1;
         child = child >> 1;
     }
@@ -56,9 +53,6 @@ PriorityQueue *pq_create(uint32_t capacity) {
     return pq;
 }
 void pq_delete(PriorityQueue **q) {
-    /*for (uint32_t i = 0; i < (*q)->capacity; i++) {
-        node_delete(&((*q)->A[i]));
-    }*/
     free((*q)->A);
     (*q)->A = NULL;
     free(*q);
@@ -81,9 +75,12 @@ bool enqueue(PriorityQueue *q, Node *n) {
     fix_heap2(q->A, 1, q->top);
     return true;
 }
+
+// Having trouble here. In my tests, dequeue seems to be working correctly.
 bool dequeue(PriorityQueue *q, Node **n) {
-    if (pq_empty(q))
+    if (q->top == 0) {
         return false;
+    }
     *n = q->A[0];
     q->top--;
     q->A[0] = q->A[q->top];

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// A Stack of Node structs, used for rebuilding a Huffman tree.
 typedef struct Stack {
     uint32_t top;
     uint32_t capacity;

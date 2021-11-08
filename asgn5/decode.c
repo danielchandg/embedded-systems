@@ -21,6 +21,7 @@
 
 bool verbose = false;
 
+// Helper function to print help string.
 void help_string(char *cwd) {
     fprintf(stdout,
         "SYNOPSIS\n  A Huffman decoder.\n  Decompresses a file using the Huffman coding "
@@ -29,6 +30,8 @@ void help_string(char *cwd) {
         "Input file to decompress.\n  -o outfile     Output of decompressed data.\n",
         cwd);
 }
+
+// Helper function to print the tree of a root node.
 void print_tree(Node *root) {
     if (!root->left || !root->right)
         return;
@@ -56,22 +59,22 @@ int main(int argc, char **argv) {
         case 'i':
             infile = open(optarg, O_RDONLY);
             if (infile == -1) {
-                //fprintf(stderr, "Error: failed to open infile.\n");
                 return 0;
             }
             break;
         case 'o':
             outfile = open(optarg, O_WRONLY);
+            // If file not found, create the file.
             if (outfile == -1) {
                 outfile = creat(optarg, S_IRWXU);
-                //fprintf(stderr, "Error: failed to open outfile.\n");
-                //return 0;
             }
             break;
         case 'v': verbose = true; break;
         case '?': help_string(cwd); return 0;
         }
     }
+
+    // Create a Header.
     Header h;
     if (read_bytes(infile, (uint8_t *) &h, sizeof(Header)) < (int) sizeof(Header)) {
         fprintf(stderr, "Failed to open file for decoding.\n");
@@ -83,6 +86,7 @@ int main(int argc, char **argv) {
     }
     fchmod(outfile, h.permissions);
 
+    // Reading the tree dump and rebuilding the tree.
     uint8_t *buf = (uint8_t *) calloc(h.tree_size, sizeof(uint8_t));
     if (read_bytes(infile, buf, (int) h.tree_size) < (int) h.tree_size) {
         fprintf(stderr, "Failed to read tree dump.\n");
@@ -91,9 +95,8 @@ int main(int argc, char **argv) {
     Node *tree = rebuild_tree(h.tree_size, buf);
     // print_tree(tree);
 
+    // Decoding the compressed file. Read bits one at a time while updating *node.
     Node *node = tree;
-
-    // printf("file size = %" PRIu64 "\n", h.file_size);
     uint64_t decoded_bytes = 0;
     while (decoded_bytes < h.file_size) {
         read_bit(infile, buf);
@@ -113,6 +116,8 @@ int main(int argc, char **argv) {
             node = tree;
         }
     }
+
+    // Print verbose statistics if requested.
     if (verbose) {
         double space_saving = ((double) bytes_read) / ((double) bytes_written);
         fprintf(stdout,
@@ -120,7 +125,11 @@ int main(int argc, char **argv) {
             " bytes\nSpace saving: %4.2lf%%\n",
             bytes_read, bytes_written, 100 * (1 - space_saving));
     }
-    // node_delete(&node);
+
+    // Memory cleanup.
+    close(infile);
+    close(outfile);
+
     delete_tree(&tree);
     tree = NULL;
     node = NULL;

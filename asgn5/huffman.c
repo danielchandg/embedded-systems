@@ -11,6 +11,7 @@
 #include "stack.h"
 #include "io.h"
 
+// Function to build Huffman tree based on histogram.
 Node *build_tree(uint64_t hist[static ALPHABET]) {
     PriorityQueue *pq = pq_create(ALPHABET);
     for (int i = 0; i < ALPHABET; i++) {
@@ -32,6 +33,8 @@ Node *build_tree(uint64_t hist[static ALPHABET]) {
     pq_delete(&pq);
     return c;
 }
+
+// Function to use post-order traversal to build Code table for Huffman tree.
 void build_codes(Node *root, Code table[static ALPHABET]) {
     static Code c;
     uint8_t temp = 0;
@@ -49,6 +52,8 @@ void build_codes(Node *root, Code table[static ALPHABET]) {
         }
     }
 }
+
+// Function to print tree dump of a Huffman tree.
 void dump_tree(int outfile, Node *root) {
     if (root) {
         uint8_t *buf = (uint8_t *) calloc(2, sizeof(uint8_t));
@@ -69,8 +74,9 @@ void dump_tree(int outfile, Node *root) {
         buf = NULL;
     }
 }
+
+// Function to rebuild Huffman tree from tree dump.
 Node *rebuild_tree(uint16_t nbytes, uint8_t tree[static nbytes]) {
-    // read_bytes(infile, tree_dump, tree_size);
     Stack *s = stack_create(nbytes);
     for (uint16_t i = 0; i < nbytes; i++) {
         if (tree[i] == 'L') {
@@ -95,6 +101,8 @@ Node *rebuild_tree(uint16_t nbytes, uint8_t tree[static nbytes]) {
     stack_delete(&s);
     return root;
 }
+
+// Function to delete tree.
 void delete_tree(Node **root) {
     if (*root) {
         delete_tree(&((*root)->left));
