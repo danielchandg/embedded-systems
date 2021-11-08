@@ -19,7 +19,7 @@ Node *build_tree(uint64_t hist[static ALPHABET]) {
             enqueue(pq, n);
         }
     }
-    Node *a = node_create('a', 0), *b = node_create('a', 0), *c;
+    Node *a, *b, *c;
     while (pq_size(pq) > 1) {
         dequeue(pq, &a);
         dequeue(pq, &b);
@@ -29,6 +29,7 @@ Node *build_tree(uint64_t hist[static ALPHABET]) {
         enqueue(pq, c);
     }
     dequeue(pq, &c);
+    pq_delete(&pq);
     return c;
 }
 void build_codes(Node *root, Code table[static ALPHABET]) {
@@ -91,6 +92,7 @@ Node *rebuild_tree(uint16_t nbytes, uint8_t tree[static nbytes]) {
     }
     Node *root;
     stack_pop(s, &root);
+    stack_delete(&s);
     return root;
 }
 void delete_tree(Node **root) {

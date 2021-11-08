@@ -113,16 +113,19 @@ int main(int argc, char **argv) {
             node = tree;
         }
     }
-	if(verbose){
-		double space_saving = ((double)bytes_read) / ((double)bytes_written);
-        	fprintf(stdout, "Compressed file size: %" PRIu64 " bytes\nDecompressed file size: %" PRIu64 " bytes\nSpace saving: %4.2lf%%\n", bytes_read, bytes_written, 100*(1-space_saving));
-	}	
-	// node_delete(&node);
-	delete_tree(&tree);
-	tree = NULL;
-	node = NULL;
-	free(buf);
-	buf = NULL;
+    if (verbose) {
+        double space_saving = ((double) bytes_read) / ((double) bytes_written);
+        fprintf(stdout,
+            "Compressed file size: %" PRIu64 " bytes\nDecompressed file size: %" PRIu64
+            " bytes\nSpace saving: %4.2lf%%\n",
+            bytes_read, bytes_written, 100 * (1 - space_saving));
+    }
+    // node_delete(&node);
+    delete_tree(&tree);
+    tree = NULL;
+    node = NULL;
+    free(buf);
+    buf = NULL;
 
     return 0;
 }

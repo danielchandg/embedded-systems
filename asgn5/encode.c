@@ -60,7 +60,8 @@ int main(int argc, char **argv) {
         case '?': help_string(cwd); return 0;
         }
     }
-    uint64_t histogram[ALPHABET];
+    // uint64_t histogram[ALPHABET];
+    uint64_t *histogram = (uint64_t *) calloc(ALPHABET, sizeof(uint64_t));
     for (int i = 0; i < ALPHABET; i++)
         histogram[i] = 0;
     uint8_t *bit = (uint8_t *) calloc(1, sizeof(uint8_t));
@@ -85,7 +86,8 @@ int main(int argc, char **argv) {
     Node *tree = build_tree(histogram);
     //print_tree(tree);
 
-    Code table[ALPHABET];
+    //Code table[ALPHABET];
+    Code *table = (Code *) calloc(ALPHABET, sizeof(Code));
     for (int i = 0; i < ALPHABET; i++)
         table[i] = code_init();
     build_codes(tree, table);
@@ -102,18 +104,18 @@ int main(int argc, char **argv) {
 	printf("\n\n");
 	*/
 
-    Header h;
-    h.magic = MAGIC;
-    h.tree_size = 3 * unique_symbols - 1;
+    Header *h = (Header *) malloc(sizeof(Header));
+    h->magic = MAGIC;
+    h->tree_size = 3 * unique_symbols - 1;
 
     struct stat statbuf;
     fstat(infile, &statbuf);
     // statbuf.st_mode is the permissions.
     fchmod(outfile, statbuf.st_mode);
-    h.permissions = statbuf.st_mode;
-    h.file_size = statbuf.st_size;
+    h->permissions = statbuf.st_mode;
+    h->file_size = statbuf.st_size;
 
-    write_bytes(outfile, (uint8_t *) &h, sizeof(Header));
+    write_bytes(outfile, (uint8_t *) h, sizeof(Header));
     //read_bytes(in, (uint8_t *) &h, sizeof(header));
 
     dump_tree(outfile, tree);
@@ -130,16 +132,30 @@ int main(int argc, char **argv) {
         write_code(outfile, &table[*bit]);
     }
     flush_codes(outfile);
-    if(verbose){
-	double space_saving = ((double)bytes_written) / ((double)bytes_read/2);
-	fprintf(stdout, "Uncompressed file size: %" PRIu64 " bytes\nCompressed file size: %" PRIu64 " bytes\nSpace saving: %4.2lf%%\n", bytes_read/2, bytes_written, 100*(1-space_saving));
+    if (verbose) {
+        double space_saving = ((double) bytes_written) / ((double) bytes_read / 2);
+        fprintf(stdout,
+            "Uncompressed file size: %" PRIu64 " bytes\nCompressed file size: %" PRIu64
+            " bytes\nSpace saving: %4.2lf%%\n",
+            bytes_read / 2, bytes_written, 100 * (1 - space_saving));
     }
     close(infile);
     close(outfile);
     close(encode_file);
 
-	free(bit);
-	bit = NULL;
-	delete_tree(&tree);
+    infile_name = NULL;
+    cwd = NULL;
+    free(histogram);
+    histogram = NULL;
+    free(table);
+    table = NULL;
+    free(bit);
+    bit = NULL;
+    free(h);
+    h = NULL;
+    /*free(statbuf);
+    statbuf = NULL;*/
+    delete_tree(&tree);
+    tree = NULL;
     return 0;
 }
