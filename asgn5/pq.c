@@ -68,7 +68,7 @@ uint32_t pq_size(PriorityQueue *q) {
     return q->top;
 }
 bool enqueue(PriorityQueue *q, Node *n) {
-    if (q->top == q->capacity || !n){
+    if (q->top == q->capacity || !n) {
         return false;
     }
     q->A[q->top] = n;

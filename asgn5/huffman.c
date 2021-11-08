@@ -90,7 +90,7 @@ Node *rebuild_tree(uint16_t nbytes, uint8_t tree[static nbytes]) {
             c = node_join(b, a);
             stack_push(s, c);
         } else {
-		return NULL;
+            return NULL;
         }
     }
     Node *root;

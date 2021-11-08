@@ -93,9 +93,9 @@ int main(int argc, char **argv) {
         return 1;
     }
     Node *tree = rebuild_tree(h.tree_size, buf);
-    if(!tree){
-	    fprintf(stderr, "Invalid tree dump.\n");
-	    return 1;
+    if (!tree) {
+        fprintf(stderr, "Invalid tree dump.\n");
+        return 1;
     }
     // print_tree(tree);
 
