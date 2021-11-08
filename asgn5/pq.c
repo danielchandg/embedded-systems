@@ -68,8 +68,9 @@ uint32_t pq_size(PriorityQueue *q) {
     return q->top;
 }
 bool enqueue(PriorityQueue *q, Node *n) {
-    if (pq_full(q))
+    if (q->top == q->capacity || !n){
         return false;
+    }
     q->A[q->top] = n;
     q->top++;
     fix_heap2(q->A, 1, q->top);
@@ -77,6 +78,7 @@ bool enqueue(PriorityQueue *q, Node *n) {
 }
 
 // Having trouble here. In my tests, dequeue seems to be working correctly.
+// Even when enqueue-ing in a full queue or dequeue-ing an empty queue.
 bool dequeue(PriorityQueue *q, Node **n) {
     if (q->top == 0) {
         return false;

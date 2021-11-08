@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
         return 1;
     }
     if (h.magic != MAGIC) {
-        fprintf(stderr, "Failed to verify header's magic number.\n");
+        fprintf(stderr, "Invalid magic number.\n");
         return 1;
     }
     fchmod(outfile, h.permissions);
@@ -89,10 +89,14 @@ int main(int argc, char **argv) {
     // Reading the tree dump and rebuilding the tree.
     uint8_t *buf = (uint8_t *) calloc(h.tree_size, sizeof(uint8_t));
     if (read_bytes(infile, buf, (int) h.tree_size) < (int) h.tree_size) {
-        fprintf(stderr, "Failed to read tree dump.\n");
+        fprintf(stderr, "Invalid tree dump.\n");
         return 1;
     }
     Node *tree = rebuild_tree(h.tree_size, buf);
+    if(!tree){
+	    fprintf(stderr, "Invalid tree dump.\n");
+	    return 1;
+    }
     // print_tree(tree);
 
     // Decoding the compressed file. Read bits one at a time while updating *node.
@@ -105,7 +109,7 @@ int main(int argc, char **argv) {
         else
             node = node->right;
         if (!node) {
-            fprintf(stderr, "Error: Invalid encoded file.\n");
+            fprintf(stderr, "Invalid encoded file.\n");
             return 1;
         }
         if (!node->left && !node->right) {

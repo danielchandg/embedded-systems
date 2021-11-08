@@ -90,10 +90,7 @@ Node *rebuild_tree(uint16_t nbytes, uint8_t tree[static nbytes]) {
             c = node_join(b, a);
             stack_push(s, c);
         } else {
-            printf("Invalid tree dump: ");
-            for (uint16_t j = 0; j < nbytes; j++)
-                printf(" %" PRIu8, tree[i]);
-            printf("\n");
+		return NULL;
         }
     }
     Node *root;
