@@ -81,6 +81,7 @@ bool enqueue(PriorityQueue *q, Node *n) {
 // Even when enqueue-ing in a full queue or dequeue-ing an empty queue.
 bool dequeue(PriorityQueue *q, Node **n) {
     if (q->top == 0) {
+        *n = NULL;
         return false;
     }
     *n = q->A[0];
