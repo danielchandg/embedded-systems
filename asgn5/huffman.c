@@ -31,20 +31,6 @@ Node *build_tree(uint64_t hist[static ALPHABET]) {
     dequeue(pq, &c);
     return c;
 }
-void print_tree(Node *root) {
-    if (!root->left || !root->right)
-        return;
-    node_print(root);
-    printf(" points to: ");
-    node_print(root->left);
-    printf(" & ");
-    node_print(root->right);
-    printf("\n");
-    if (root->left)
-        print_tree(root->left);
-    if (root->right)
-        print_tree(root->right);
-}
 void build_codes(Node *root, Code table[static ALPHABET]) {
     static Code c;
     uint8_t temp = 0;
@@ -94,12 +80,12 @@ Node *rebuild_tree(uint16_t nbytes, uint8_t tree[static nbytes]) {
             Node *a, *b, *c;
             stack_pop(s, &a);
             stack_pop(s, &b);
-            c = node_join(a, b);
+            c = node_join(b, a);
             stack_push(s, c);
         } else {
             printf("Invalid tree dump: ");
             for (uint16_t j = 0; j < nbytes; j++)
-                printf("%" PRIu8, tree[i]);
+                printf(" %" PRIu8, tree[i]);
             printf("\n");
         }
     }

@@ -25,11 +25,6 @@ Node *node_join(Node *left, Node *right) {
     n->right = right;
     return n;
 }
-void node_swap(Node *a, Node *b) {
-    Node c = *a;
-    *a = *b;
-    *b = c;
-}
 void node_print(Node *n) {
     if (n)
         printf("(%c, %" PRIu64 ") ", n->symbol, n->frequency);

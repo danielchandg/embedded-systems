@@ -26,8 +26,7 @@ int read_bytes(int infile, uint8_t *buf, int nbytes) {
         if (cur_read >= nbytes)
             break;
         count = read(infile, buf + cur_read, nbytes - cur_read);
-        if (count < nbytes - cur_read)
-            printf("Read_bytes wanted %d bytes and read %d bytes\n", nbytes, count);
+        // if (count < nbytes - cur_read) printf("Read_bytes wanted %d bytes and read %d bytes\n", nbytes, count);
     }
     bytes_read += (uint64_t) cur_read;
     return cur_read;
