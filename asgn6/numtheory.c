@@ -69,7 +69,7 @@ void pow_mod(mpz_t o, mpz_t a, mpz_t d, mpz_t n) {
         mpz_mul(p, p, p);
         mpz_mod(p, p, n);
         // d = floor(d/2)
-        mpz_fdiv_q_ui(exp, exp, 2);
+        mpz_fdiv_q_ui(d, d, 2);
     }
     mpz_set(d, exp);
     mpz_set(o, v);
@@ -83,7 +83,8 @@ bool is_prime(mpz_t n, uint64_t iters) {
     // Check if n is even.
     if (mpz_fdiv_ui(n, 2) == 0)
         return false;
-    if(mpz_cmp_si(n, 0) < 0) return false;
+    if (mpz_cmp_si(n, 0) < 0)
+        return false;
     mpz_t s, r, a, y, j, two, upper, temp, n_1;
     mpz_init_set(r, n);
     mpz_init_set(n_1, n);
@@ -94,6 +95,8 @@ bool is_prime(mpz_t n, uint64_t iters) {
     mpz_sub_ui(upper, upper, 3);
     // s = 0, r = n-1.
     // While r is even, halve r and increment s.
+    if (mpz_cmp_ui(n, 1) == 0)
+        return false;
     while (mpz_cmp_ui(r, 0) != 0 && mpz_fdiv_ui(r, 2) == 0) {
         mpz_fdiv_q_ui(r, r, 2);
         mpz_add_ui(s, s, 1);
