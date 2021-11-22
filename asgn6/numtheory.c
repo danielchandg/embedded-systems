@@ -97,7 +97,7 @@ bool is_prime(mpz_t n, uint64_t iters) {
     mpz_sub_ui(upper, upper, 3);
     // s = 0, r = n-1.
     // While r is even, halve r and increment s.
-    while (mpz_cmp_ui(r, 0) != 0 && mpz_fdiv_ui(r, 2) == 0) {
+    while (mpz_cmp_si(r, 1) > 0 && mpz_fdiv_ui(r, 2) == 0) {
         mpz_fdiv_q_ui(r, r, 2);
         mpz_add_ui(s, s, 1);
     }
