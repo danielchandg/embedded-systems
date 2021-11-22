@@ -102,5 +102,7 @@ int main(int argc, char **argv) {
     fclose(infile);
     fclose(pbfile);
     fclose(outfile);
+    free(username);
+    username = NULL;
     mpz_clears(n, e, s, user, NULL);
 }

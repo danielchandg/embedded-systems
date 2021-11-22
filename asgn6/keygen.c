@@ -48,18 +48,18 @@ int main(int argc, char **argv) {
             }
             break;
         case 'n':
-            pbfile = fopen(optarg, "r");
-            if (pbfile == NULL) {
+            pbfile = fopen(optarg, "w+");
+            /*if (pbfile == NULL) {
                 fprintf(stderr, "Error: failed to open pbfile.\n");
                 return 0;
-            }
+            }*/
             break;
         case 'd':
-            pvfile = fopen(optarg, "w");
-            if (pvfile == NULL) {
+            pvfile = fopen(optarg, "w+");
+            /*if (pvfile == NULL) {
                 fprintf(stderr, "Error: failed to open pvfile.\n");
                 return 0;
-            }
+            }*/
             break;
         case 's':
             seed = strtoul(optarg, NULL, 10);

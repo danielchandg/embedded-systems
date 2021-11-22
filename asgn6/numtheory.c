@@ -59,7 +59,7 @@ void pow_mod(mpz_t o, mpz_t a, mpz_t d, mpz_t n) {
     mpz_t p, exp;
     mpz_init_set(p, a);
     mpz_init_set(exp, d);
-    while (mpz_get_ui(exp) > 0) {
+    while (mpz_cmp_si(exp, 0) > 0) {
         // if d is odd, set v to (v*p)%n.
         if (mpz_fdiv_ui(exp, 2) == 1) {
             mpz_mul(o, o, p);
@@ -113,13 +113,13 @@ bool is_prime(mpz_t n, uint64_t iters) {
                 //printf("y^2=%lu\n", mpz_get_ui(y));
                 if (mpz_cmp_ui(y, 1) == 0) {
                     mpz_clears(s, r, a, y, j, two, upper, temp, n_1, NULL);
-		    return false;
+                    return false;
                 }
                 mpz_add_ui(j, j, 1);
             }
-            if (mpz_cmp(y, n_1) != 0){
-		mpz_clears(s, r, a, y, j, two, upper, temp, n_1, NULL);
-		return false;
+            if (mpz_cmp(y, n_1) != 0) {
+                mpz_clears(s, r, a, y, j, two, upper, temp, n_1, NULL);
+                return false;
             }
         }
     }
