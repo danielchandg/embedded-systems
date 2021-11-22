@@ -55,15 +55,15 @@ void mod_inverse(mpz_t o, mpz_t a, mpz_t n) {
 // Parameters: (output, base, exponent, modulus).
 // Make sure a, d, and n are all positive.
 void pow_mod(mpz_t o, mpz_t a, mpz_t d, mpz_t n) {
-    mpz_set_ui(o, 1);
-    mpz_t p, exp;
+    mpz_t p, exp, v;
+    mpz_init_set_ui(v, 1);
     mpz_init_set(p, a);
     mpz_init_set(exp, d);
-    while (mpz_cmp_si(exp, 0) != 0) {
+    while (mpz_cmp_si(d, 0) > 0) {
         // if d is odd, set v to (v*p)%n.
-        if (mpz_fdiv_ui(exp, 2) == 1) {
-            mpz_mul(o, o, p);
-            mpz_mod(o, o, n);
+        if (mpz_fdiv_ui(d, 2) == 1) {
+            mpz_mul(v, v, p);
+            mpz_mod(v, v, n);
         }
         // p = (p*p)%n
         mpz_mul(p, p, p);
@@ -71,7 +71,9 @@ void pow_mod(mpz_t o, mpz_t a, mpz_t d, mpz_t n) {
         // d = floor(d/2)
         mpz_fdiv_q_ui(exp, exp, 2);
     }
-    mpz_clears(p, exp, NULL);
+    mpz_set(d, exp);
+    mpz_set(o, v);
+    mpz_clears(p, exp, v, NULL);
 }
 bool is_prime(mpz_t n, uint64_t iters) {
     //gmp_randstate_t state;
@@ -81,6 +83,7 @@ bool is_prime(mpz_t n, uint64_t iters) {
     // Check if n is even.
     if (mpz_fdiv_ui(n, 2) == 0)
         return false;
+    if(mpz_cmp_si(n, 0) < 0) return false;
     mpz_t s, r, a, y, j, two, upper, temp, n_1;
     mpz_init_set(r, n);
     mpz_init_set(n_1, n);
@@ -91,7 +94,7 @@ bool is_prime(mpz_t n, uint64_t iters) {
     mpz_sub_ui(upper, upper, 3);
     // s = 0, r = n-1.
     // While r is even, halve r and increment s.
-    while (mpz_fdiv_ui(r, 2) == 0) {
+    while (mpz_cmp_ui(r, 0) != 0 && mpz_fdiv_ui(r, 2) == 0) {
         mpz_fdiv_q_ui(r, r, 2);
         mpz_add_ui(s, s, 1);
     }
