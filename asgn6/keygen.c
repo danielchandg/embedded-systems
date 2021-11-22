@@ -19,7 +19,8 @@ void help_string(char *cwd) {
     fprintf(stdout,
         "SYNOPSIS\n   Generates an RSA public/private key pair.\n\nUSAGE\n   %s [-hv] [b bits] -n "
         "pbfile -d pvfile\n\nOPTIONS\n   -h              Display program help and usage.\n   -v    "
-        "          Display verbose program output.\n-b bits         Minimum bits needed for public "
+        "          Display verbose program output.\n   -b bits         Minimum bits needed for "
+        "public "
         "key n.\n   -c confidence   Miller-Rabin iterations for testing primes (default: 50).\n   "
         "-n pbfile       Public key file (default: rsa.pub).\n   -d pvfile       Private key file "
         "(default: rsa.priv).\n   -s seed         Random seed for testing.\n",
@@ -79,9 +80,9 @@ int main(int argc, char **argv) {
     mpz_t p, q, n, e, d, user, s;
     mpz_inits(p, q, n, e, d, user, s, NULL);
     rsa_make_pub(p, q, n, e, bits, iters);
-    gmp_printf("PUBLIC KEY:\n   p: %Zd\n   q: %Zd\n   n: %Zd\n   e: %Zd\n", p, q, n, e);
+    //gmp_printf("PUBLIC KEY:\n   p: %Zd\n   q: %Zd\n   n: %Zd\n   e: %Zd\n", p, q, n, e);
     rsa_make_priv(d, e, p, q);
-    gmp_printf("PRIVATE KEY:\n   d: %Zd\n", d);
+    //gmp_printf("PRIVATE KEY:\n   d: %Zd\n", d);
     char *username = getenv("USER");
     mpz_set_str(user, username, 62);
     rsa_sign(s, user, d, n);
@@ -138,4 +139,5 @@ int main(int argc, char **argv) {
     fclose(pbfile);
     fclose(pvfile);
     mpz_clears(p, q, n, e, d, user, s, NULL);
+    randstate_clear();
 }

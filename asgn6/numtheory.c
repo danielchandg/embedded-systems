@@ -95,6 +95,9 @@ bool is_prime(mpz_t n, uint64_t iters) {
     mpz_sub_ui(n_1, n_1, 1);
     mpz_init_set(upper, n);
     mpz_sub_ui(upper, upper, 3);
+    if (mpz_cmp_si(upper, 0) <= 0)
+        mpz_set_si(upper, 1);
+    //gmp_printf("upper: %Zd\n", upper);
     // s = 0, r = n-1.
     // While r is even, halve r and increment s.
     while (mpz_cmp_si(r, 1) > 0 && mpz_fdiv_ui(r, 2) == 0) {

@@ -14,7 +14,7 @@ void rsa_make_pub(mpz_t p, mpz_t q, mpz_t n, mpz_t e, uint64_t nbits, uint64_t i
     // srandom(iters + nbits);
     uint64_t p_bits = (random() % (nbits / 2)) + ((nbits + 3) / 4);
     uint64_t q_bits = nbits - p_bits + 2;
-    printf("nbits: %lu, p bits: %lu\n", nbits, p_bits);
+    //printf("nbits: %lu, p bits: %lu\n", nbits, p_bits);
     make_prime(p, p_bits, iters);
     make_prime(q, q_bits, iters);
     mpz_mul(n, p, q);
