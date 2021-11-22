@@ -12,7 +12,7 @@ void gcd(mpz_t g, mpz_t a, mpz_t b) {
     mpz_t a1, b1;
     mpz_init_set(a1, a);
     mpz_init_set(b1, b);
-    while (mpz_get_ui(b1) > 0) {
+    while (mpz_cmp_si(b1, 0) != 0) {
         mpz_set(g, b1);
         mpz_mod(b1, a1, b1);
         mpz_set(a1, g);
@@ -46,7 +46,7 @@ void mod_inverse(mpz_t o, mpz_t a, mpz_t n) {
         mpz_set(t1, temp);
     }
     if (mpz_cmp_si(r, 1) > 0) {
-        mpz_set_si(o, -1);
+        mpz_set_si(o, 0);
     } else if (mpz_cmp_si(o, 0) < 0) {
         mpz_add(o, o, n);
     }
@@ -81,7 +81,6 @@ bool is_prime(mpz_t n, uint64_t iters) {
     // Check if n is even.
     if (mpz_fdiv_ui(n, 2) == 0)
         return false;
-    bool ret = true;
     mpz_t s, r, a, y, j, two, upper, temp, n_1;
     mpz_init_set(r, n);
     mpz_init_set(n_1, n);
@@ -113,19 +112,19 @@ bool is_prime(mpz_t n, uint64_t iters) {
                 mpz_set(y, temp);
                 //printf("y^2=%lu\n", mpz_get_ui(y));
                 if (mpz_cmp_ui(y, 1) == 0) {
-                    ret = false;
-                    break;
+                    mpz_clears(s, r, a, y, j, two, upper, temp, n_1, NULL);
+		    return false;
                 }
                 mpz_add_ui(j, j, 1);
             }
-            if (mpz_cmp(y, n_1) != 0)
-                ret = false;
-            if (!ret)
-                break;
+            if (mpz_cmp(y, n_1) != 0){
+		mpz_clears(s, r, a, y, j, two, upper, temp, n_1, NULL);
+		return false;
+            }
         }
     }
-    mpz_clears(a, y, j, temp, n_1, NULL);
-    return ret;
+    mpz_clears(s, r, a, y, j, two, upper, temp, n_1, NULL);
+    return true;
 }
 void make_prime(mpz_t p, uint64_t bits, uint64_t iters) {
     //gmp_randstate_t state;

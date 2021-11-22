@@ -28,7 +28,7 @@ void help_string(char *cwd) {
 int main(int argc, char **argv) {
     int64_t opt = 0;
     bool verbose = false;
-    FILE *infile = stdin, *outfile = stdout, *pbfile = fopen("rsa.pub", "w+");
+    FILE *infile = stdin, *outfile = stdout, *pbfile = fopen("rsa.pub", "r");
     char *cwd = argv[0];
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
@@ -57,6 +57,10 @@ int main(int argc, char **argv) {
         case 'h': help_string(cwd); return 0;
         case '?': help_string(cwd); return 0;
         }
+    }
+    if (pbfile == NULL) {
+        fprintf(stderr, "Error: failed to open pbfile.\n");
+        return 0;
     }
     mpz_t n, e, s, user;
     mpz_inits(n, e, s, user, NULL);
