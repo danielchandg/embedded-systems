@@ -81,8 +81,8 @@ bool is_prime(mpz_t n, uint64_t iters) {
     //gmp_randseed_ui(state, 1);
 
     // Check if n is even.
-    if (mpz_fdiv_ui(n, 2) == 0)
-        return false;
+    /*if (mpz_fdiv_ui(n, 2) == 0)
+        return false;*/
     if (mpz_cmp_si(n, 0) < 0)
         return false;
     mpz_t s, r, a, y, j, two, upper, temp, n_1;
