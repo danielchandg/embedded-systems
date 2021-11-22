@@ -59,7 +59,7 @@ void pow_mod(mpz_t o, mpz_t a, mpz_t d, mpz_t n) {
     mpz_t p, exp;
     mpz_init_set(p, a);
     mpz_init_set(exp, d);
-    while (mpz_cmp_si(exp, 0) > 0) {
+    while (mpz_cmp_si(exp, 0) != 0) {
         // if d is odd, set v to (v*p)%n.
         if (mpz_fdiv_ui(exp, 2) == 1) {
             mpz_mul(o, o, p);
