@@ -17,12 +17,12 @@
 
 void help_string(char *cwd) {
     fprintf(stdout,
-        "SYNOPSIS\n   Encrypts data using RSA encryption.\n   Encrypted data is decrypted by the "
-        "decrypt program.\n\nUSAGE\n   %s [-hv] [-i infile] [-o outfile] -n pubkey\n\nOPTIONS\n   "
+        "SYNOPSIS\n   Decrypts data using RSA decryption.\n   Encrypted data is encrypted by the "
+        "encrypt program.\n\nUSAGE\n   %s [-hv] [-i infile] [-o outfile] -d privkey\n\nOPTIONS\n   "
         "-h              Display program help and usage.\n   -v              Display verbose "
-        "program output.\n   -i infile       Input file of data to encrypt (default: stdin).\n   "
-        "-o outfile      Output file for encrypted data (default: stdout).\n   -n pbfile       "
-        "Public key file (default: rsa.pub).\n",
+        "program output.\n   -i infile       Input file of data to decrypt (default: stdin).\n   "
+        "-o outfile      Output file for decrypted data (default: stdout).\n   -n pvfile       "
+        "Private key file (default: rsa.priv).\n",
         cwd);
 }
 int main(int argc, char **argv) {
