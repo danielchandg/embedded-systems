@@ -85,7 +85,7 @@ bool is_prime(mpz_t n, uint64_t iters) {
         return false;*/
     if (mpz_cmp_si(n, 2) == 0)
         return true;
-    if (mpz_cmp_si(n, 1) <= 0 || mpz_fdiv_ui(n, 2) == 0)
+    if (mpz_cmp_si(n, 1) <= 0)
         return false;
     mpz_t s, r, a, y, j, two, upper, temp, n_1;
     mpz_init_set(r, n);
