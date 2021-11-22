@@ -10,11 +10,11 @@
 #include "randstate.h"
 #include "numtheory.h"
 
+// Make RSA public keys.
+// Output: (prime1, prime2, prime1*prime2, exponent)
 void rsa_make_pub(mpz_t p, mpz_t q, mpz_t n, mpz_t e, uint64_t nbits, uint64_t iters) {
-    // srandom(iters + nbits);
     uint64_t p_bits = (random() % (nbits / 2)) + ((nbits + 3) / 4);
     uint64_t q_bits = nbits - p_bits + 2;
-    //printf("nbits: %lu, p bits: %lu\n", nbits, p_bits);
     make_prime(p, p_bits, iters);
     make_prime(q, q_bits, iters);
     mpz_mul(n, p, q);
@@ -37,18 +37,23 @@ void rsa_make_pub(mpz_t p, mpz_t q, mpz_t n, mpz_t e, uint64_t nbits, uint64_t i
     } while (mpz_get_ui(gcd_val) != 1);
     mpz_clears(totient, base, gcd_val, NULL);
 }
+// Write public keys to pbfile.
 void rsa_write_pub(mpz_t n, mpz_t e, mpz_t s, char username[], FILE *pbfile) {
     gmp_fprintf(pbfile, "%Zx\n", n);
     gmp_fprintf(pbfile, "%Zx\n", e);
     gmp_fprintf(pbfile, "%Zx\n", s);
     fprintf(pbfile, "%s\n", username);
 }
+// Read public keys from pbfile.
 void rsa_read_pub(mpz_t n, mpz_t e, mpz_t s, char username[], FILE *pbfile) {
     gmp_fscanf(pbfile, "%Zx\n", n);
     gmp_fscanf(pbfile, "%Zx\n", e);
     gmp_fscanf(pbfile, "%Zx\n", s);
     fscanf(pbfile, "%s\n", username);
 }
+// Make private keys.
+// Input: e, p, q.
+// Output: d
 void rsa_make_priv(mpz_t d, mpz_t e, mpz_t p, mpz_t q) {
     mpz_t totient;
     mpz_init(totient);
@@ -57,15 +62,15 @@ void rsa_make_priv(mpz_t d, mpz_t e, mpz_t p, mpz_t q) {
     mpz_mul(totient, p, q);
     mpz_add_ui(p, p, 1);
     mpz_add_ui(q, q, 1);
-    //gmp_printf("totient: %Zd\n", totient);
     mod_inverse(d, e, totient);
-    //gmp_printf("modular inverse (d): %Zd\n", d);
     mpz_clear(totient);
 }
+// Write private keys to pvfile.
 void rsa_write_priv(mpz_t n, mpz_t d, FILE *pvfile) {
     gmp_fprintf(pvfile, "%Zx\n", n);
     gmp_fprintf(pvfile, "%Zx\n", d);
 }
+// Read private keys from pvfile.
 void rsa_read_priv(mpz_t n, mpz_t d, FILE *pvfile) {
     gmp_fscanf(pvfile, "%Zx\n", n);
     gmp_fscanf(pvfile, "%Zx\n", d);
@@ -73,6 +78,8 @@ void rsa_read_priv(mpz_t n, mpz_t d, FILE *pvfile) {
 void rsa_encrypt(mpz_t c, mpz_t m, mpz_t e, mpz_t n) {
     pow_mod(c, m, e, n);
 }
+// Encrypt data in infile using n and e.
+// Write encrypted data to outfile.
 void rsa_encrypt_file(FILE *infile, FILE *outfile, mpz_t n, mpz_t e) {
     uint64_t k = 0;
     int fd = fileno(infile);
@@ -100,6 +107,8 @@ void rsa_encrypt_file(FILE *infile, FILE *outfile, mpz_t n, mpz_t e) {
 void rsa_decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t n) {
     pow_mod(m, c, d, n);
 }
+// Decrypt encrypted data in infile using n and d.
+// Write decrypted data to outfile.
 void rsa_decrypt_file(FILE *infile, FILE *outfile, mpz_t n, mpz_t d) {
     uint64_t k = 0;
     int fd = fileno(outfile);
@@ -124,6 +133,8 @@ void rsa_decrypt_file(FILE *infile, FILE *outfile, mpz_t n, mpz_t d) {
     free(block);
     block = NULL;
 }
+// Sign a username m with d and n.
+// Verify a signature s of a username m with e and n.
 void rsa_sign(mpz_t s, mpz_t m, mpz_t d, mpz_t n) {
     pow_mod(s, m, d, n);
 }

@@ -15,6 +15,7 @@
 
 #define OPTIONS "b:i:n:d:s:vh"
 
+// Helper function to print help message.
 void help_string(char *cwd) {
     fprintf(stdout,
         "SYNOPSIS\n   Generates an RSA public/private key pair.\n\nUSAGE\n   %s [-hv] [b bits] -n "
@@ -32,7 +33,6 @@ int main(int argc, char **argv) {
     bool verbose = false;
     FILE *pbfile = fopen("rsa.pub", "w+"), *pvfile = fopen("rsa.priv", "w+");
     char *cwd = argv[0];
-    // int pvfile_fd = open("rsa.priv", S_IRWXU | S_IRWXG | S_IROTH | S_IWOTH);
 
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
@@ -48,20 +48,8 @@ int main(int argc, char **argv) {
                 iters = 50;
             }
             break;
-        case 'n':
-            pbfile = fopen(optarg, "w+");
-            /*if (pbfile == NULL) {
-                fprintf(stderr, "Error: failed to open pbfile.\n");
-                return 0;
-            }*/
-            break;
-        case 'd':
-            pvfile = fopen(optarg, "w+");
-            /*if (pvfile == NULL) {
-                fprintf(stderr, "Error: failed to open pvfile.\n");
-                return 0;
-            }*/
-            break;
+        case 'n': pbfile = fopen(optarg, "w+"); break;
+        case 'd': pvfile = fopen(optarg, "w+"); break;
         case 's':
             seed = strtoul(optarg, NULL, 10);
             if (errno == EINVAL) {
@@ -73,19 +61,20 @@ int main(int argc, char **argv) {
         case '?': help_string(cwd); return 0;
         }
     }
+    // Update file permissions and initialize random state.
     fchmod(fileno(pvfile), 0600);
     randstate_init(seed);
     srandom(seed);
 
     mpz_t p, q, n, e, d, user, s;
     mpz_inits(p, q, n, e, d, user, s, NULL);
+    // Make public and private keys.
     rsa_make_pub(p, q, n, e, bits, iters);
-    //gmp_printf("PUBLIC KEY:\n   p: %Zd\n   q: %Zd\n   n: %Zd\n   e: %Zd\n", p, q, n, e);
     rsa_make_priv(d, e, p, q);
-    //gmp_printf("PRIVATE KEY:\n   d: %Zd\n", d);
     char *username = getenv("USER");
     mpz_set_str(user, username, 62);
     rsa_sign(s, user, d, n);
+    // Write keys to file.
     rsa_write_pub(n, e, s, username, pbfile);
     rsa_write_priv(n, d, pvfile);
     int bit_count;

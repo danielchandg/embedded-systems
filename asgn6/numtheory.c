@@ -8,6 +8,7 @@
 #include "randstate.h"
 
 // Parameters: (output, a, b).
+// Output is set to gcd of a and b.
 void gcd(mpz_t g, mpz_t a, mpz_t b) {
     mpz_t a1, b1;
     mpz_init_set(a1, a);
@@ -20,6 +21,8 @@ void gcd(mpz_t g, mpz_t a, mpz_t b) {
     mpz_set(g, a1);
     mpz_clears(a1, b1, NULL);
 }
+// Parameters: (output, a, n).
+// Output is set to modular inverse of a mod n.
 void mod_inverse(mpz_t o, mpz_t a, mpz_t n) {
     // r = r, r' = r1, t = o, t' = t1
     mpz_t r, r1, t1, q, temp;
@@ -29,7 +32,6 @@ void mod_inverse(mpz_t o, mpz_t a, mpz_t n) {
     mpz_init_set_si(t1, 1);
     mpz_inits(q, temp, NULL);
     while (mpz_cmp_si(r1, 0) != 0) {
-        //gmp_printf("r' = %Zd\n", r1);
         // q = floor(r / r')
         mpz_fdiv_q(q, r, r1);
 
@@ -75,14 +77,9 @@ void pow_mod(mpz_t o, mpz_t a, mpz_t d, mpz_t n) {
     mpz_set(o, v);
     mpz_clears(p, exp, v, NULL);
 }
+// Check if n is prime using Miller-Rabin test.
+// Iters is number of Miller-Rabin iterations used.
 bool is_prime(mpz_t n, uint64_t iters) {
-    //gmp_randstate_t state;
-    //gmp_randinit_mt(state);
-    //gmp_randseed_ui(state, 1);
-
-    // Check if n is even.
-    /*if (mpz_fdiv_ui(n, 2) == 0)
-        return false;*/
     if (mpz_cmp_si(n, 2) == 0)
         return true;
     if (mpz_cmp_si(n, 1) <= 0)
@@ -97,29 +94,24 @@ bool is_prime(mpz_t n, uint64_t iters) {
     mpz_sub_ui(upper, upper, 3);
     if (mpz_cmp_si(upper, 0) <= 0)
         mpz_set_si(upper, 1);
-    //gmp_printf("upper: %Zd\n", upper);
     // s = 0, r = n-1.
     // While r is even, halve r and increment s.
     while (mpz_cmp_si(r, 1) > 0 && mpz_fdiv_ui(r, 2) == 0) {
         mpz_fdiv_q_ui(r, r, 2);
         mpz_add_ui(s, s, 1);
     }
-    //printf("%lu-1 = 2^%lu * %lu\n", mpz_get_ui(n), mpz_get_ui(s), mpz_get_ui(r));
     mpz_inits(a, y, j, temp, NULL);
     mpz_init_set_ui(two, 2);
+    // Miller-Rabin iterations.
     for (uint64_t i = 0; i < iters; i++) {
-        //printf("Iter #%lu\n", i);
         mpz_urandomm(a, state, upper);
         mpz_add_ui(a, a, 2);
-        //printf("Rand from 2 to n-2: %lu\n", mpz_get_ui(a));
         pow_mod(y, a, r, n);
         if (mpz_cmp_ui(y, 1) != 0 && mpz_cmp(y, n_1) != 0) {
             mpz_set_ui(j, 1);
             while (mpz_cmp(j, s) < 0 && mpz_cmp(y, n_1) != 0) {
-                //printf("y=%lu, n=%lu, two=%lu\n", mpz_get_ui(y), mpz_get_ui(n), mpz_get_ui(two));
                 pow_mod(temp, y, two, n);
                 mpz_set(y, temp);
-                //printf("y^2=%lu\n", mpz_get_ui(y));
                 if (mpz_cmp_ui(y, 1) == 0) {
                     mpz_clears(s, r, a, y, j, two, upper, temp, n_1, NULL);
                     return false;
@@ -135,21 +127,17 @@ bool is_prime(mpz_t n, uint64_t iters) {
     mpz_clears(s, r, a, y, j, two, upper, temp, n_1, NULL);
     return true;
 }
+// Create a prime number with at least <bits> bits.
+// Output is p.
 void make_prime(mpz_t p, uint64_t bits, uint64_t iters) {
-    //gmp_randstate_t state;
-    //gmp_randinit_mt(state);
-    //gmp_randseed_ui(state, 1);
-
     mpz_t base;
     mpz_init_set_ui(base, 1);
     for (uint64_t i = 0; i < bits - 1; i++) {
         mpz_mul_ui(base, base, 2);
     }
-    //printf("base: %lu\n", mpz_get_ui(base));
     do {
         mpz_urandomb(p, state, bits - 1);
         mpz_add(p, p, base);
-        // gmp_printf("p: %Zd\n", p);
     } while (!is_prime(p, iters));
     mpz_clear(base);
 }

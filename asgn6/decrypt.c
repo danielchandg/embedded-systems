@@ -15,6 +15,7 @@
 
 #define OPTIONS "i:o:n:vh"
 
+// Helper function if help message is requested
 void help_string(char *cwd) {
     fprintf(stdout,
         "SYNOPSIS\n   Decrypts data using RSA decryption.\n   Encrypted data is encrypted by the "
@@ -64,6 +65,7 @@ int main(int argc, char **argv) {
     }
     mpz_t n, d;
     mpz_inits(n, d, NULL);
+    // Read private keys
     rsa_read_priv(n, d, pvfile);
     int bit_count;
     if (verbose) {
@@ -84,6 +86,7 @@ int main(int argc, char **argv) {
         gmp_printf("d (%d bits) = %Zd\n", bit_count, d);
         mpz_clear(counter);
     }
+    // Decrypt file using private key
     rsa_decrypt_file(infile, outfile, n, d);
     fclose(infile);
     fclose(pvfile);

@@ -15,6 +15,7 @@
 
 #define OPTIONS "i:o:n:vh"
 
+// Helper function if help message is requested
 void help_string(char *cwd) {
     fprintf(stdout,
         "SYNOPSIS\n   Encrypts data using RSA encryption.\n   Encrypted data is decrypted by the "
@@ -65,6 +66,7 @@ int main(int argc, char **argv) {
     mpz_t n, e, s, user;
     mpz_inits(n, e, s, user, NULL);
     char *username = (char *) calloc(256, sizeof(char));
+    // Read public keys from file
     rsa_read_pub(n, e, s, username, pbfile);
     int bit_count;
     if (verbose) {
@@ -94,10 +96,12 @@ int main(int argc, char **argv) {
         mpz_clear(counter);
     }
     mpz_set_str(user, username, 62);
+    // Verify username using signature
     if (!rsa_verify(user, s, e, n)) {
         fprintf(stderr, "Error: failed to verify signature.\n");
         return 0;
     }
+    // Encrypt file using public keys
     rsa_encrypt_file(infile, outfile, n, e);
     fclose(infile);
     fclose(pbfile);
