@@ -7,7 +7,7 @@ headers = ht.h bst.h node.h bf.h bv.h parser.h speck.h messages.h salts.h
 all: banhammer
 
 banhammer: $(objects)
-	$(CC) -o banhammer $^ -lm
+	$(CC) -o banhammer $^
 
 %.o: %.c $(headers)
 	$(CC) $(CFLAGS) -c $<
