@@ -93,13 +93,15 @@ int main(int argc, char **argv) {
     char *word = "hi";
     Node *bad_list = bst_create(), *old_list = bst_create(), *temp;
     while ((word = next_word(stdin, &re)) != NULL) {
-	int wordlen = (int)strlen(word);
-	char lower[wordlen+1];
-	for(int i=0; i<wordlen; i++){
-		if(word[i] >= 'A' && word[i] <= 'Z') lower[i] = word[i] - 'A' + 'a';
-		else lower[i] = word[i];
-	}
-	lower[wordlen] = '\0';
+        int wordlen = (int) strlen(word);
+        char lower[wordlen + 1];
+        for (int i = 0; i < wordlen; i++) {
+            if (word[i] >= 'A' && word[i] <= 'Z')
+                lower[i] = word[i] - 'A' + 'a';
+            else
+                lower[i] = word[i];
+        }
+        lower[wordlen] = '\0';
         if (!bf_probe(bf, lower))
             continue;
         temp = ht_lookup(ht, lower);
@@ -108,7 +110,7 @@ int main(int argc, char **argv) {
             continue;
         // Word is oldspeak.
         if (temp->newspeak) {
-		old_list = bst_insert(old_list, temp->oldspeak, temp->newspeak);
+            old_list = bst_insert(old_list, temp->oldspeak, temp->newspeak);
         }
         // Word is badspeak.
         else {
@@ -131,8 +133,8 @@ int main(int argc, char **argv) {
             fprintf(stdout, "%s", badspeak_message);
         else if (old_list)
             fprintf(stdout, "%s", goodspeak_message);
-    	bst_print(bad_list);
-	bst_print(old_list);
+        bst_print(bad_list);
+        bst_print(old_list);
     }
     clear_words();
     regfree(&re);
