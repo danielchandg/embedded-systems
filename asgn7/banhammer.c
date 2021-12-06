@@ -5,6 +5,7 @@
 #include <regex.h>
 #include <errno.h>
 #include <unistd.h>
+#include <string.h>
 #include "messages.h"
 #include "salts.h"
 #include "speck.h"
@@ -25,7 +26,7 @@ void help_string(char *cwd) {
         "parsed from stdin.\n\nUSAGE\n  %s [-hs] [-t size] [-f size]\n\nOPTIONS\n  -h           "
         "Program usage and help.\n  -s           Print program statistics.\n  -t size      Specify "
         "hash table size (default: 2^16).\n  -f size      Specify Bloom filter size (default: "
-        "2^20)",
+        "2^20)\n",
         cwd);
 }
 int main(int argc, char **argv) {
@@ -90,28 +91,30 @@ int main(int argc, char **argv) {
         return 1;
     }
     char *word = "hi";
-    Node *bad_list = node_create(NULL, NULL), *old_list = node_create(NULL, NULL), *temp = NULL;
-    Node *bad_point = bad_list, *old_point = old_list;
+    Node *bad_list = bst_create(), *old_list = bst_create(), *temp;
     while ((word = next_word(stdin, &re)) != NULL) {
-        if (!bf_probe(bf, word))
+	int wordlen = (int)strlen(word);
+	char lower[wordlen+1];
+	for(int i=0; i<wordlen; i++){
+		if(word[i] >= 'A' && word[i] <= 'Z') lower[i] = word[i] - 'A' + 'a';
+		else lower[i] = word[i];
+	}
+	lower[wordlen] = '\0';
+        if (!bf_probe(bf, lower))
             continue;
-        temp = ht_lookup(ht, word);
+        temp = ht_lookup(ht, lower);
         // Word is a false positive from bloom filter.
         if (temp == NULL)
             continue;
         // Word is oldspeak.
         if (temp->newspeak) {
-            old_point->left = node_create(temp->oldspeak, temp->newspeak);
-            old_point = old_point->left;
+		old_list = bst_insert(old_list, temp->oldspeak, temp->newspeak);
         }
         // Word is badspeak.
         else {
-            bad_point->left = node_create(temp->oldspeak, NULL);
-            bad_point = bad_point->left;
+            bad_list = bst_insert(bad_list, temp->oldspeak, NULL);
         }
     }
-    bad_point = bad_list;
-    old_point = old_list;
     if (stats) {
         double HashTableLoad = 100 * (double) ht_count(ht) / (double) ht_size(ht);
         double BloomFilterLoad = 100 * (double) bf_count(bf) / (double) bf_size(bf);
@@ -121,24 +124,15 @@ int main(int argc, char **argv) {
             stdout, "Average branches traversed: %.6lf\n", (double) branches / (double) lookups);
         fprintf(stdout, "Hash table load: %.6lf%%\n", HashTableLoad);
         fprintf(stdout, "Bloom filter load: %.6lf%%\n", BloomFilterLoad);
-
     } else {
-        bad_list = bad_list->left;
-        old_list = old_list->left;
         if (bad_list && old_list)
             fprintf(stdout, "%s", mixspeak_message);
         else if (bad_list)
             fprintf(stdout, "%s", badspeak_message);
         else if (old_list)
             fprintf(stdout, "%s", goodspeak_message);
-        while (bad_list != NULL) {
-            node_print(bad_list);
-            bad_list = bad_list->left;
-        }
-        while (old_list != NULL) {
-            node_print(old_list);
-            old_list = old_list->left;
-        }
+    	bst_print(bad_list);
+	bst_print(old_list);
     }
     clear_words();
     regfree(&re);
@@ -152,7 +146,7 @@ int main(int argc, char **argv) {
     goodWord = NULL;
     free(word);
     word = NULL;
-    bst_delete(&bad_point);
-    bst_delete(&old_point);
+    bst_delete(&bad_list);
+    bst_delete(&old_list);
     return 0;
 }
